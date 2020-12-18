@@ -19,4 +19,27 @@ with suggestions
 
 I'll read over this material and summaries here soon.
 
+Consider buying the ebook [Mastering STM32](https://leanpub.com/mastering-stm32?utm_campaign=mastering-stm32&utm_medium=embed&utm_source=embedder) 
+-- see the [Table of Contents](https://www.carminenoviello.com/mastering-stm32-toc.pdf)
+
+
+
+
+## The code
+
+Include code notes here
+
+## Results
+
+With SYSCLK running at 100MHz the code toggled a GPIO pin at maximum rate with various delay intervals
+
+| Delay   | Meas.  | Period  | Freq   |
+| uS      | uS     | uS      | MHz    |
+|---------|--------|---------|--------|
+| none    |   0.42 |   0.84  | 1.20   |
+|   0     |   0.73 |   1.4   | 0.68   |
+|   1     |
+|   5     |
+|  10     |
+
 

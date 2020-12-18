@@ -89,9 +89,13 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
+  // DWT initialisation code suggested
+  // at https://stackoverflow.com/questions/36378280/stm32-how-to-enable-dwt-cycle-counter
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   DWT->CYCCNT = 0;
   DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -115,7 +119,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  HAL_GPIO_TogglePin(SIG_OUT_GPIO_Port, SIG_OUT_Pin);
-	  delayUS_DWT(1);
+	  delayUS_DWT(10);
   }
   /* USER CODE END 3 */
 }
