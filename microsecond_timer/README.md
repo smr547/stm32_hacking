@@ -26,7 +26,25 @@ Consider buying the ebook [Mastering STM32](https://leanpub.com/mastering-stm32?
 
 
 ## The code
+Delay function:
+```
+#pragma GCC push_options
+#pragma GCC optimize ("O3")
+void delayUS_DWT(uint32_t us) {
+	volatile uint32_t cycles = (SystemCoreClock/1000000L)*us;
+	volatile uint32_t start = DWT->CYCCNT;
+	do  {
+	} while(DWT->CYCCNT - start < cycles);
+}
+#pragma GCC pop_options
 
+Main loop
+```
+while (1) {
+    HAL_GPIO_TogglePin(SIG_OUT_GPIO_Port, SIG_OUT_Pin);
+    delayUS_DWT(5);
+}
+```
 Include code notes here
 
 ## Results
@@ -38,8 +56,47 @@ With SYSCLK running at 100MHz the code toggled a GPIO pin at maximum rate with v
 |---------|--------|---------|--------|
 | none    |   0.42 |   0.84  | 1.20   |
 |   0     |   0.73 |   1.4   | 0.68   |
-|   1     |
-|   5     |
-|  10     |
+|   1     |   1.72 |   3.4   | 0.29   |
+|   2     |   2.72 |   5.4   | 0.184  |
+|   5     |   5.68 |  11.37  | 0.088  |
+|  10     |  10.72 |  21.45  | 0.0446 |
+
+## Observations
+
+* HAL library overhead is significant (maximum achievable output frequency of 1.20 MHz with a 100 MHz system clock
+* 0.72 uSec fixed overhead in function delay() function call and processing
+* function is useful for delays of 1 uSec or more with and
+* precision improves with delay time
+
+## Improving the code
+To reduce overheads and preccision try:
+
+* inlining the delay code
+* refactoring 
+
+In the interest of maintaining portability, we continue to use the HAL library
+
+## Inlined code
+
+```
+	uint32_t delay_us = 10;
+	uint32_t cycles = (SystemCoreClock / 1000000L) * delay_us;
+	volatile uint32_t start;
+
+	while (1) {
+		HAL_GPIO_TogglePin(SIG_OUT_GPIO_Port, SIG_OUT_Pin);
+		start = DWT->CYCCNT;
+		do {
+		} while (DWT->CYCCNT - start < cycles);
+	}
+```
+
+Reduced overhead by about 0.2 uSec
+
+| Delay   | Meas.  | Period  | Freq   |
+| uS      | uS     | uS      | MHz    |
+|---------|--------|---------|--------|
+|   1     |   1.47 |   2.9   | 0.339  |
+|  10     |  10.50 |  21.00  | 0.0476 |
 
 
